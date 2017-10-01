@@ -7,4 +7,4 @@ How to run :
 ```sudo usermod -a -G sudo gitlab-runner && sudo sh -c "echo \"gitlab-runner ALL=(ALL) NOPASSWD: ALL\" >> /etc/sudoers"```
 3. Add .gitlab-ci.yml to your gitlab repository
 
-The create.sh file will generate and register a systemd service.
+The create.sh file will generate and register a systemd service so you can use service ragemp start/stop/status/restart and restart your server automatically if it crashes. (you can also set the service name to a custom one)
