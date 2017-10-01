@@ -1,0 +1,69 @@
+# Read README.md at https://github.com/CVLRO/ragemp-gitlab-ci for usage instructions
+
+stages: 
+  # - build
+  # - test
+  - deploy
+
+variables:
+# replace ragemp with the name of the service you want to use for your server
+  SERVICE_NAME: ragemp
+# this is the npm package for the client_packages of your server
+  NPM_CLIENT: cvlrp-dev
+# SERVER_PATH is in the gitlab secret variables in my case, you can put it here too or in secret variables
+
+# The deploy_staging handles the deployment of a development server on the server on which you installed gitlab-runner
+
+deploy_staging:
+# remove the 2 lines below if you want to run the lower development build on other branches than devel
+  only: 
+    - devel
+  script: 
+    # eval is used instead of wrapping commands with "", do not use '' because variables won't be parsed
+    # Uncomment export if some variable doesn't work
+    #  - export
+    
+    # Download latest ragemp server
+     - "[ ! -f server ] && wget https://cdn.rage.mp/lin/server"
+     
+    # Download create.sh script from my repo, which creates a systemd service and sets it up
+    # Also the systemd service will restart your server if it crashes
+     - eval wget https://raw.githubusercontent.com/CVLRO/create-systemd-service/master/create.sh
+     
+    # Create systemd service with $SERVICE_NAME as its name so you can use service ragemp start/status/stop/restart for example
+     - eval sudo chmod +x create.sh && sudo ./create.sh $SERVICE_NAME "$SERVER_PATH/server --inspect" 'RageMP test server'
+     
+     # Clean the server directory from create.sh
+     - eval sudo rm create.sh
+     
+    # The line below will get a public npm build of your clientside code and rename it into client_packages (disabled by default)
+    #  - eval yarn add $NPM_CLIENT && mv -R $NPM_CLIENT client_packages
+    
+    # Check if server path exists, delete it, then recreate it and copy the files in the gitlab build directory to where it will run
+     - eval [ -e $SERVER_PATH ] && sudo rm -rf $SERVER_PATH && mkdir $SERVER_PATH && cp -R * $SERVER_PATH/ && chmod +x $SERVER_PATH/server
+    
+    # Restart/start the server if it is not running
+     - eval service $SERVICE_NAME restart
+  stage: deploy
+
+
+# The deploy_prod handles the deployment of the production server, ,you are free to customize it to your needs, it must be manually
+# run from gitlab
+
+deploy_prod: 
+  only: 
+    - master
+  script: 
+    # Modify everything here to your needs for deployment to production
+    # - eval [ ! -f server ] && wget https://cdn.rage.mp/lin/server
+    
+    # - copy the conf.prod.json (which has default port and is announced) to conf.json (which by default should
+    # be the development config and has a special port and not announced)
+    - eval [ -e conf.json ] && [ -e conf.prod.json ] && mv conf.prod.json conf.json
+    
+    #  - 'eval service ragemp-prod restart '
+  environment:
+    name: production
+  allow_failure : false
+  when: manual
+  stage: deploy
