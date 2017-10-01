@@ -20,7 +20,7 @@ deploy_staging:
     - devel
   script: 
     # eval is used instead of wrapping commands with "", do not use '' because variables won't be parsed
-    # Uncomment export if some variable doesn't work
+    # Uncomment export if some variable doesn't work to debug
     #  - export
     
     # Download latest ragemp server
@@ -48,7 +48,7 @@ deploy_staging:
 
 
 # The deploy_prod handles the deployment of the production server, you are free to customize it to your needs, it must be manually
-# run from gitlab
+# run from gitlab - you can copy the development build but use a different path and different client npm build
 
 deploy_prod: 
   only: 
