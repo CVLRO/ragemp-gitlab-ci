@@ -36,8 +36,8 @@ deploy_staging:
      # Clean the server directory from create.sh
      - eval sudo rm create.sh
      
-    # The line below will get a public npm build of your clientside code and rename it into client_packages (disabled by default)
-    #  - eval yarn add $NPM_CLIENT && mv -R $NPM_CLIENT client_packages
+    # The line below will get a public npm build with yarn of your clientside code and rename it into client_packages (disabled by default)
+    #  - eval yarn add $NPM_CLIENT && mv $NPM_CLIENT client_packages
     
     # Check if server path exists, delete it, then recreate it and copy the files in the gitlab build directory to where it will run
      - eval [ -e $SERVER_PATH ] && sudo rm -rf $SERVER_PATH && mkdir $SERVER_PATH && cp -R * $SERVER_PATH/ && chmod +x $SERVER_PATH/server
@@ -47,7 +47,7 @@ deploy_staging:
   stage: deploy
 
 
-# The deploy_prod handles the deployment of the production server, ,you are free to customize it to your needs, it must be manually
+# The deploy_prod handles the deployment of the production server, you are free to customize it to your needs, it must be manually
 # run from gitlab
 
 deploy_prod: 
