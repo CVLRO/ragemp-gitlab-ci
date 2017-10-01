@@ -1,4 +1,4 @@
-# RageMP GitlabCI Configuration for ragemp server (without build)
+# GitlabCI Configuration for RageMP server (without build)
 
 How to run : 
 
