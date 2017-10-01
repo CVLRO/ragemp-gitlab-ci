@@ -11,8 +11,8 @@ variables:
 # this is the npm package for the client_packages of your server
   DEV_NPM_CLIENT: yourserver-dev
   PROD_NPM_CLIENT: yourserver-prod
-# SERVER_PATH is in the gitlab secret variables in my case, you can put it here too or in secret variables
-  SERVER_PATH: /home/devserver
+# DEV_SERVER_PATH is in the gitlab secret variables in my case, you can put it here too or in secret variables
+  DEV_SERVER_PATH: /home/devserver
 
 # The deploy_staging handles the deployment of a development server on the server on which you installed gitlab-runner
 
@@ -32,11 +32,11 @@ deploy_staging:
     # Also the systemd service will restart your server if it crashes
      - eval wget https://raw.githubusercontent.com/CVLRO/create-systemd-service/master/create.sh
     
-    # Delete the existing service if it exists
+    # Delete the existing service if it exists (path might change for systemd on your distro)
      - eval [ -f /lib/systemd/system/$SYSTEMD_NAME.service ] && sudo rm /lib/systemd/system/$SYSTEMD_NAME.service
     
     # Create systemd service with $SYSTEMD_NAME as its name so you can use service ragemp start/status/stop/restart for example
-     - eval sudo chmod +x create.sh && sudo ./create.sh $SYSTEMD_NAME "$SERVER_PATH/server --inspect" 'RageMP test server'
+     - eval sudo chmod +x create.sh && sudo ./create.sh $SYSTEMD_NAME "$DEV_SERVER_PATH/server --inspect" 'RageMP test server'
      
      # Clean the server directory from create.sh
      - eval sudo rm create.sh
@@ -47,7 +47,7 @@ deploy_staging:
     #  - eval yarn add $DEV_NPM_CLIENT && mv $DEV_NPM_CLIENT client_packages
     
     # Check if server path exists, delete it, then recreate it and copy the files in the gitlab build directory to where it will run
-     - eval [ -e $SERVER_PATH ] && sudo rm -rf $SERVER_PATH && mkdir $SERVER_PATH && cp -R * $SERVER_PATH/ && chmod +x $SERVER_PATH/server
+     - eval [ -e $DEV_SERVER_PATH ] && sudo rm -rf $DEV_SERVER_PATH && mkdir $DEV_SERVER_PATH && cp -R * $DEV_SERVER_PATH/ && chmod +x $DEV_SERVER_PATH/server
     
     # Restart/start the server if it is not running
      - eval sudo service $SYSTEMD_NAME restart
