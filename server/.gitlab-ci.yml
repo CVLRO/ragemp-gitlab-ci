@@ -14,7 +14,7 @@ variables:
   PROD_NPM_CLIENT: yourserver-prod
 # DEV_SERVER_PATH is in the gitlab secret variables in my case, you can put it here too or in secret variables
   DEV_SERVER_PATH: /home/devserver
-  PROD_SERVER_PATH : /home/server
+  PROD_SERVER_PATH: /home/server
 
 # The deploy_staging handles the deployment of a development server on the server on which you installed gitlab-runner
 
