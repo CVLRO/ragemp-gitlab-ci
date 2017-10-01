@@ -7,7 +7,7 @@ stages:
 
 variables:
 # replace ragemp with the name of the service you want to use for your server
-  SERVICE_NAME: ragemp
+  SYSTEMD_NAME: ragemp
 # this is the npm package for the client_packages of your server
   NPM_CLIENT: cvlrp-dev
 # SERVER_PATH is in the gitlab secret variables in my case, you can put it here too or in secret variables
@@ -31,10 +31,10 @@ deploy_staging:
      - eval wget https://raw.githubusercontent.com/CVLRO/create-systemd-service/master/create.sh
     
     # Delete the existing service if it exists
-     - eval [ -f /lib/systemd/system/$SERVICE_NAME.service ] && sudo rm /lib/systemd/system/$SERVICE_NAME.service
+     - eval [ -f /lib/systemd/system/$SYSTEMD_NAME.service ] && sudo rm /lib/systemd/system/$SYSTEMD_NAME.service
     
-    # Create systemd service with $SERVICE_NAME as its name so you can use service ragemp start/status/stop/restart for example
-     - eval sudo chmod +x create.sh && sudo ./create.sh $SERVICE_NAME "$SERVER_PATH/server --inspect" 'RageMP test server'
+    # Create systemd service with $SYSTEMD_NAME as its name so you can use service ragemp start/status/stop/restart for example
+     - eval sudo chmod +x create.sh && sudo ./create.sh $SYSTEMD_NAME "$SERVER_PATH/server --inspect" 'RageMP test server'
      
      # Clean the server directory from create.sh
      - eval sudo rm create.sh
@@ -48,7 +48,7 @@ deploy_staging:
      - eval [ -e $SERVER_PATH ] && sudo rm -rf $SERVER_PATH && mkdir $SERVER_PATH && cp -R * $SERVER_PATH/ && chmod +x $SERVER_PATH/server
     
     # Restart/start the server if it is not running
-     - eval sudo service $SERVICE_NAME restart
+     - eval sudo service $SYSTEMD_NAME restart
   stage: deploy
 
 
