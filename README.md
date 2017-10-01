@@ -9,4 +9,6 @@ How to run :
 
 The create.sh file will generate and register a systemd service so you can use service ragemp start/stop/status/restart and restart your server automatically if it crashes. (you can also set the service name to a custom one)
 
-There will be also a build system for client_packages for npm soon.
+This is only a deployment script, the build and test stages are left to you because it will differ from server to server.
+
+There will be also a build system for client_packages for npm soon. 
