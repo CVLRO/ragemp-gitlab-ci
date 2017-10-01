@@ -29,12 +29,17 @@ deploy_staging:
     # Download create.sh script from my repo, which creates a systemd service and sets it up
     # Also the systemd service will restart your server if it crashes
      - eval wget https://raw.githubusercontent.com/CVLRO/create-systemd-service/master/create.sh
-     
+    
+    # Delete the existing service if it exists
+     - eval [ -f /lib/systemd/system/$SERVICE_NAME.service ] && sudo rm /lib/systemd/system/$SERVICE_NAME.service
+    
     # Create systemd service with $SERVICE_NAME as its name so you can use service ragemp start/status/stop/restart for example
      - eval sudo chmod +x create.sh && sudo ./create.sh $SERVICE_NAME "$SERVER_PATH/server --inspect" 'RageMP test server'
      
      # Clean the server directory from create.sh
      - eval sudo rm create.sh
+     # Reload systemctl
+     - eval sudo systemctl daemon-reload
      
     # The line below will get a public npm build with yarn of your clientside code and rename it into client_packages (disabled by default)
     #  - eval yarn add $NPM_CLIENT && mv $NPM_CLIENT client_packages
@@ -43,7 +48,7 @@ deploy_staging:
      - eval [ -e $SERVER_PATH ] && sudo rm -rf $SERVER_PATH && mkdir $SERVER_PATH && cp -R * $SERVER_PATH/ && chmod +x $SERVER_PATH/server
     
     # Restart/start the server if it is not running
-     - eval service $SERVICE_NAME restart
+     - eval sudo service $SERVICE_NAME restart
   stage: deploy
 
 
