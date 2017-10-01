@@ -6,7 +6,8 @@ stages:
   - deploy
 
 variables:
-# replace ragemp with the name of the service you want to use for your server
+# replace ragemp/ragempd with the name of the service you want to use for your devserver/server
+  DEV_SYSTEMD_NAME: ragempd
   SYSTEMD_NAME: ragemp
 # this is the npm package for the client_packages of your server
   DEV_NPM_CLIENT: yourserver-dev
@@ -33,10 +34,10 @@ deploy_staging:
      - eval wget https://raw.githubusercontent.com/CVLRO/create-systemd-service/master/create.sh
     
     # Delete the existing service if it exists (path might change for systemd on your distro)
-     - eval [ -f /lib/systemd/system/$SYSTEMD_NAME.service ] && sudo rm /lib/systemd/system/$SYSTEMD_NAME.service
+     - eval [ -f /lib/systemd/system/$DEV_SYSTEMD_NAME.service ] && sudo rm /lib/systemd/system/$DEV_SYSTEMD_NAME.service
     
-    # Create systemd service with $SYSTEMD_NAME as its name so you can use service ragemp start/status/stop/restart for example
-     - eval sudo chmod +x create.sh && sudo ./create.sh $SYSTEMD_NAME "$DEV_SERVER_PATH/server --inspect" 'RageMP test server'
+    # Create systemd service with $DEV_SYSTEMD_NAME as its name so you can use service ragemp start/status/stop/restart for example
+     - eval sudo chmod +x create.sh && sudo ./create.sh $DEV_SYSTEMD_NAME "$DEV_SERVER_PATH/server --inspect" 'RageMP test server'
      
      # Clean the server directory from create.sh
      - eval sudo rm create.sh
@@ -50,7 +51,7 @@ deploy_staging:
      - eval [ -e $DEV_SERVER_PATH ] && sudo rm -rf $DEV_SERVER_PATH && mkdir $DEV_SERVER_PATH && cp -R * $DEV_SERVER_PATH/ && chmod +x $DEV_SERVER_PATH/server
     
     # Restart/start the server if it is not running
-     - eval sudo service $SYSTEMD_NAME restart
+     - eval sudo service $DEV_SYSTEMD_NAME restart
   stage: deploy
 
 
