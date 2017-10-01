@@ -10,9 +10,9 @@ variables:
   SYSTEMD_NAME: ragemp
 # this is the npm package for the client_packages of your server
   DEV_NPM_CLIENT: yourserver-dev
-  PROD_NPM_CLIENT : yourserver-prod
+  PROD_NPM_CLIENT: yourserver-prod
 # SERVER_PATH is in the gitlab secret variables in my case, you can put it here too or in secret variables
-  SERVER_PATH : /home/devserver
+  SERVER_PATH: /home/devserver
 
 # The deploy_staging handles the deployment of a development server on the server on which you installed gitlab-runner
 
