@@ -1,4 +1,4 @@
-# RageMP Gitlab Continuous Integration Config
+# RageMP GitlabCI Configuration for ragemp server (without build)
 
 How to run : 
 
