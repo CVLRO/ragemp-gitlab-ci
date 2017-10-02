@@ -6,9 +6,13 @@ stages:
   - deploy
 
 variables:
-# replace ragemp/ragempd with the name of the service you want to use for your devserver/server
+# replace ragemp/ragempd with the name you want for service ragempd start/stop/restart/status commands
   DEV_SYSTEMD_NAME: ragempd
   SYSTEMD_NAME: ragemp
+# the command for the systemd start script
+  DEV_STARTCMD: $SERVER_PATH/server --inspect=test.rage.mp:9221
+  PROD_STARTCMD: $SERVER_PATH/server
+  
 # this is the npm package for the client_packages of your server
   DEV_NPM_CLIENT: yourserver-dev
   PROD_NPM_CLIENT: yourserver-prod
@@ -29,19 +33,14 @@ deploy_staging:
     
     # Download latest ragemp server
      - "[ ! -f server ] && wget https://cdn.rage.mp/lin/server"
-     
-    # Download create.sh script from my repo, which creates a systemd service and sets it up
-    # Also the systemd service will restart your server if it crashes
-     - eval wget https://raw.githubusercontent.com/CVLRO/create-systemd-service/master/create.sh
-    
-    # Delete the existing service if it exists (path might change for systemd on your distro)
+   
+    # Delete the existing systemd service if it exists (path might change for systemd on your distro)
      - eval [ -f /lib/systemd/system/$DEV_SYSTEMD_NAME.service ] && sudo rm /lib/systemd/system/$DEV_SYSTEMD_NAME.service
+   
+    # Creates a systemd service and sets it up
+    # Also the systemd service will restart your server if it crashes
+     - echo -e "[Unit]\nDescription=RageMP server\nAfter=syslog.target\n\n[Install]\nWantedBy=multi-user.target\n\n[Service]\nType=simple\nExecStart=$DEV_STARTCMD\nRestart=on-failure\nWorkingDirectory=$SERVER_PATH" | sudo tee -a /lib/systemd/system/$SYSTEMD_NAME.service
     
-    # Create systemd service with $DEV_SYSTEMD_NAME as its name so you can use service ragemp start/status/stop/restart for example
-     - eval sudo chmod +x create.sh && sudo ./create.sh $DEV_SYSTEMD_NAME "$DEV_SERVER_PATH/server --inspect" 'RageMP test server'
-     
-     # Clean the server directory from create.sh
-     - eval sudo rm create.sh
      # Reload systemctl
      - eval sudo systemctl daemon-reload
      
